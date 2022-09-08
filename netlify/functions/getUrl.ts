@@ -8,7 +8,7 @@ const handler: Handler = async (event, context) => {
     let format = ytdl.chooseFormat(info.formats, { quality: "highestaudio" });
     if (format == null) {
         return {
-            statusCode: 200,
+            statusCode: 201,
             body: JSON.stringify({ url: null }),
         };
     }

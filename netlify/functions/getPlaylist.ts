@@ -3,20 +3,30 @@ import axios from "axios";
 
 const handler: Handler = async (event, context) => {
     let playlistUrl = event.queryStringParameters.id;
-
-    let rp = await axios.get(playlistUrl);
+    let rp
+    try {
+        rp = await axios.get(playlistUrl);
+    } catch {
+        return {
+            statusCode: 201,
+            body: 'Incorrect URL'
+        };
+    }
     let body = rp.data
     let start = body.indexOf("var ytInitialData = ");
     let end = body.indexOf("</script>", start);
     let obj = body.substring(start + 20, end - 1);
     let ytdata = JSON.parse(obj);
-    if (ytdata.contents == undefined) {
+    let data
+    try {
+        data = ytdata.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].playlistVideoListRenderer.contents;
+    } catch (error) {
+        console.error(error);
         return {
-            statusCode: 200,
-            body: null,
+            statusCode: 201,
+            body: 'Incorrect playlist URL'
         };
     }
-    let data = ytdata.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].playlistVideoListRenderer.contents;
     let playlist = [];
     for (const item of data) {
         playlist.push({
