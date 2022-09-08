@@ -1,4 +1,4 @@
-export default function Loader(props) {
+export default function Loader(props: any) {
     const className = props.className;
     return (
         <div role="status">
